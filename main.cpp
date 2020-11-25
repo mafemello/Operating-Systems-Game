@@ -66,6 +66,7 @@ void GameLoop () {
 
 	openQuestions (); // loading questions
 
+	srand(time(0)); 
 	int random = rand() % 20 + 1; // generating random number to pick random questions
 	char* result;
 	char line [100];
