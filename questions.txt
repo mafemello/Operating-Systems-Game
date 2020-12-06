@@ -1,15 +1,75 @@
-- Normalmente, quantos litros de sangue uma pessoa tem? Em média, quantos são retirados numa doação de sangue?
+1 - Normalmente, quantos litros de sangue uma pessoa tem? Em média, quantos são retirados numa doação de sangue?
+A - Uma pessoa normalmente tem cerca de 4 a 6 litros de sangue. Em média, são retirados 450 mililitros numa doação de sangue.
+B - Uma pessoa normalmente tem cerca de 7 a 9 litros de sangue. Em média, são retirados 10 mililitros numa doação de sangue.
+C - Uma pessoa normalmente tem cerca de 1 a 2 litros de sangue. Em média, é retirado 1 litro numa doação de sangue.
+D - Uma pessoa normalmente tem exatamente 5 litros de sangue. Em média, são retirados 800 mililitros numa doação de sangue.
+
 - De quem é a famosa frase “Penso, logo existo”?
+A - Friedrich Nietzsche
+B - Immanuel Kant
+C - René Descartes.
+D - Platão.
+
 - De onde é a invenção do chuveiro elétrico?
+A - China.
+B - Inglaterra.
+C - Estados Unidos.
+D - Brasil.
+
 - Quais o menor e o maior país do mundo?
+A - Vaticano e China.
+B - Vaticano e Brasil.
+C - Vaticano e Russia.
+D - Tuvalu e China.
+
 - Qual o nome do presidente do Brasil que ficou conhecido como Jango?
+A - Luiz Inácio Lula da Silva.
+B - João Goulart.
+C - Juscelino Kubitschek.
+D - Jair Bolsonaro.
+
 - Qual o livro mais vendido no mundo a seguir à Bíblia?
+A - O Pequeno Príncipe.
+B - O Senhor dos Anéis
+C - Harry Potter e a Pedra Filosofal.
+D - Don Quixote.
+
 - Quantas casas decimais tem o número pi?
+A - Infinitas.
+B - 1.000.000.
+C - 1.000.
+D - 11.265.875.
+
 - Atualmente, quantos elementos químicos a tabela periódica possui?
+A - 118.
+B - 120.
+C - 123.
+D - 104.
+
 - Qual o número mínimo de jogadores numa partida de futebol?
+A - 14.
+B - 16.
+C - 22.
+D - 17.
+
 - Quem pintou "Guernica"?
+A - Leonardo Da Vinci.
+B - Claude Monet.
+C - Pablo Picasso.
+D - Vincent van Gogh.
+
 - Quanto tempo a luz do Sol demora para chegar à Terra?
+A - 4 horas.
+B - 8 minutos.
+C - 1 ano.
+D - 35 segundos.
+
 - Qual personagem folclórico costuma ser agradado pelos caçadores com a oferta de fumo?
+A - Saci Perere.
+B - Caipora.
+C - Mula sem cabeça.
+D - Curupira.
+
 - Em que período da pré-história o fogo foi descoberto?
 - Qual a montanha mais alta do Brasil?
 - Em qual local da Ásia o português é língua oficial?
