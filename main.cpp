@@ -16,12 +16,23 @@
 #include <cstring>
 #include <thread>
 #include <chrono>
+#include <fstream>
 #include <functional>
+#include <semaphore.h>
+
 #include <time.h>
+
+#define NUMBER_OF_QUESTIONS 15
+#define NUMBER_OF_ALTERNATIVES 4
+#define REFUSE_TO_ANSWER "E - Não responder"
+
 using namespace std;
 
+const int PRIZES[4] = {0, 75000, 250000, 1000000};
+
+
 // global variables 
-string name;
+/*string name;
 FILE *quest;
 
 // thread timer class 
@@ -86,29 +97,31 @@ void GameLoop () {
 			i++;
 		}
 	}
-}
-
-#include <semaphore.h>
+}*/
 
 typedef struct {
     string buffer;
     sem_t can_read;
     sem_t can_write;
-} SharedBuffer;
+} SharedBufferString;
 
-void display_home(SharedBuffer *buffer) {
+typedef struct {
+    int buffer;
+    sem_t can_read;
+    sem_t can_write;
+} SharedBufferInt;
+
+void display_home(SharedBufferString *buffer) {
     system("tput reset");
     cout << "Welcome to the game 'Who Wants to be a Bilionaire?'.\n"
-        "Are you ready? Tell us your name:\nWelcome to the game "
-        "'Who Wants to be a Bilionaire?'. \nAre you ready? "
-        "Tell us your name:" << endl;
+        "Are you ready? Tell us your name:" << endl;
     sem_post(&buffer->can_write);
 }
 
-void display_greetings(SharedBuffer *buffer) {
-    system("tput reset");
+void display_greetings(SharedBufferString *buffer) {
     sem_wait(&buffer->can_read);
-	cout << "\nHi, " << name << ", let's start with the rules:"
+    system("tput reset");
+	cout << "\nHi, " << buffer->buffer << ", let's start with the rules:"
         "You have 30 seconds to answer each question. You type "
         "the answer (e.g.: 'b'), and the timer stops.\n"
         "If the timer ends, you lose it all.\n"
@@ -116,42 +129,78 @@ void display_greetings(SharedBuffer *buffer) {
     sem_post(&buffer->can_write);
 }
 
-void display_question(SharedBuffer *buffer) {
-    system("tput reset");
+/*void display_timer(int limit) {
+
+}*/
+
+void display_question(SharedBufferString *buffer, bool save_point_reached, int prize) {
+    sem_post(&buffer->can_write);
     sem_wait(&buffer->can_read);
+    system("tput reset");
+    if (save_point_reached)
+        cout << "Congratulations. You have won $" << prize << "\n";
+    cout << buffer->buffer << "\n";
+    /*thread(display_timer, 30);*/
 }
 
+void display_results(int prize) {
+    cout << "The game has finished. You won " << prize << "\n";
+}
 
+void read_question(SharedBufferString *buffer, ifstream &questions) {
+    sem_wait(&buffer->can_write);
+    string aux;
+    buffer->buffer.clear();
+    for (int i = 0; i < NUMBER_OF_ALTERNATIVES + 1; i++)  {
+        getline(questions, aux);
+        buffer->buffer.append(aux);
+        buffer->buffer.append("\n");
+    }
+    getline(questions, aux);
+    buffer->buffer.append(REFUSE_TO_ANSWER);
+    buffer->buffer.append("\n");
+    sem_post(&buffer->can_read);
+}
+
+void read_name(SharedBufferString *buffer) {
+    sem_wait(&buffer->can_write);
+    cin >> buffer->buffer;
+    sem_post(&buffer->can_read);
+}
+
+void read_enter(SharedBufferString *buffer) {
+    sem_wait(&buffer->can_write);
+    cin >> buffer->buffer;
+    sem_post(&buffer->can_read);
+}
+
+void display_thread(SharedBufferString *buffer_str) {
+    display_home(buffer_str);
+    display_greetings(buffer_str);
+    int i;
+    for (i = 1; i <= NUMBER_OF_QUESTIONS; i++) {
+        display_question(buffer_str, i % 5 == 0, PRIZES[i / 5]);
+    }
+    display_results(PRIZES[i / 5]);
+}
+
+void read_thread(SharedBufferString *buffer_str, ifstream &questions) {
+    read_name(buffer_str);
+    read_enter(buffer_str);
+    for (int i = 1; i <= NUMBER_OF_QUESTIONS; i++)
+        read_question(buffer_str, questions);
+}
 
 int main (void) {
-	// testing the timer
-	Timer tHello;
-    tHello.start(chrono::milliseconds(1000), []{
-        cout << "Hello!" << endl;
-    });
-
-    this_thread::sleep_for(chrono::seconds(2));
-    tHello.stop();
-
-    string interface = "Welcome to the game 'Who Wants to be a Bilionaire?'. "
-        "\nAre you ready? Tell us your name:\n";
-	
-	cout << "Welcome to the game 'Who Wants to be a Bilionaire?'. \nAre you ready? Tell us your name:\n";
-	cin >> name;
-	cout << "\nHi, " << name << ", let's start with the rules:" << endl;
-	cout << "You have 30 seconds to answer each question. You type the answer (e.g.: 'b'), and the timer stops." << endl;
-	cout << "If the timer ends, you lose it all.\n";
-	cout << "\nPress 'E' to start." << endl;
-
-	char enter;
-	while (cin >> enter) {
-		if (enter == 'e' || enter == 'E'){
-			GameLoop ();
-			break;
-		}
-		else cout << "Please, try again. Press 'E' to start." << endl;
-	}
-
-
+    SharedBufferString buffer_str;
+    buffer_str.buffer = "";
+    sem_init(&buffer_str.can_read, 0, 0);
+    sem_init(&buffer_str.can_write, 0, 0);
+    ifstream questions;
+    questions.open("questions.txt");
+    thread th2(display_thread, &buffer_str);
+    thread th1(read_thread, &buffer_str, ref(questions));
+    th2.join();
+    th1.join();
 	return 0;
 }
