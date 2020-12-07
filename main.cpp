@@ -50,6 +50,14 @@ public:
     }
 };
 
+void start_timer(int interval) {
+    int offset = cout.tellp();
+    
+    for (int i = 0; i < interval; i++) {
+        cout << "Time remaingin: " << i << " seconds";
+    }
+}
+
 // void function to open the questions file txt
 void openQuestions () {
 	quest = fopen ("questions.txt", "r");
@@ -59,7 +67,6 @@ void openQuestions () {
 	}	
 	return;
 }
-
 
 // main function 
 void GameLoop () {
@@ -78,16 +85,44 @@ void GameLoop () {
 			i++;
 		}
 	}
+}
 
+#include <semaphore.h>
 
+typedef struct {
+    string buffer;
+    sem_t can_read;
+    sem_t can_write;
+} SharedBuffer;
 
+void display_home(SharedBuffer *buffer) {
+    system("tput reset");
+    cout << "Welcome to the game 'Who Wants to be a Bilionaire?'.\n"
+        "Are you ready? Tell us your name:\nWelcome to the game "
+        "'Who Wants to be a Bilionaire?'. \nAre you ready? "
+        "Tell us your name:" << endl;
+    sem_post(&buffer->can_write);
+}
 
+void display_greetings(SharedBuffer *buffer) {
+    system("tput reset");
+    sem_wait(&buffer->can_read);
+	cout << "\nHi, " << name << ", let's start with the rules:"
+        "You have 30 seconds to answer each question. You type "
+        "the answer (e.g.: 'b'), and the timer stops.\n"
+        "If the timer ends, you lose it all.\n"
+        "\nPress 'E' to start." << endl;
+    sem_post(&buffer->can_write);
+}
 
+void display_question(SharedBuffer *buffer) {
+    system("tput reset");
+    sem_wait(&buffer->can_read);
 }
 
 
-int main (void) {
 
+int main (void) {
 	// testing the timer
 	Timer tHello;
     tHello.start(chrono::milliseconds(1000), []{
@@ -96,6 +131,9 @@ int main (void) {
 
     this_thread::sleep_for(chrono::seconds(2));
     tHello.stop();
+
+    string interface = "Welcome to the game 'Who Wants to be a Bilionaire?'. "
+        "\nAre you ready? Tell us your name:\n";
 	
 	cout << "Welcome to the game 'Who Wants to be a Bilionaire?'. \nAre you ready? Tell us your name:\n";
 	cin >> name;
