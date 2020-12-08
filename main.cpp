@@ -19,189 +19,220 @@
 #include <fstream>
 #include <functional>
 #include <semaphore.h>
+#include <ctype.h>
+#include <atomic>
 
 #include <time.h>
 
-#define NUMBER_OF_QUESTIONS 15
+#define NUMBER_OF_QUESTIONS 20
 #define NUMBER_OF_ALTERNATIVES 4
 #define REFUSE_TO_ANSWER "E - Não responder"
+#define NUMBER_OF_PRIZES 5
 
 using namespace std;
 
-const int PRIZES[4] = {0, 75000, 250000, 1000000};
+const int PRIZES[NUMBER_OF_PRIZES] = {0, 50000, 75000, 250000, 1000000};
 
-const char respostas[15] = {A, C, D, C, B, D, A, A, A, C, B, B, A, D, D, B, D, A, C, B}
-
-
-// global variables 
-/*string name;
-FILE *quest;
-
-// thread timer class 
-class Timer {
-
-	thread th;
-    bool running = false;
-
-public:
-    typedef std::chrono::milliseconds Interval;
-    typedef std::function<void(void)> Timeout;
-
-    void start(const Interval &interval, const Timeout &timeout) {
-        running = true;
-
-        th = thread([=]() {
-            while (running == true) {
-                this_thread::sleep_for(interval);
-                timeout();
-            }
-        });
-    }
-    void stop() {
-        running = false;
-        th.join();
-    }
+const char ANSWERS[NUMBER_OF_QUESTIONS] = {
+    'A', 'C', 'D', 'C', 'B', 'D', 'A', 'A', 'A', 'C',
+    'B', 'B', 'A', 'D', 'D', 'B', 'D', 'A', 'C', 'B'
 };
 
-void start_timer(int interval) {
-    int offset = cout.tellp();
-    
-    for (int i = 0; i < interval; i++) {
-        cout << "Time remaingin: " << i << " seconds";
-    }
+template <class T> class SharedBuffer {
+    private:
+        sem_t can_read;
+        sem_t can_write;
+        T content;
+    public: 
+        SharedBuffer() {
+            sem_init(&this->can_read, 0, 0);
+            sem_init(&this->can_write, 0, 0);
+        }
+
+        void allow_read() {
+            sem_post(&this->can_read);
+        }
+
+        void allow_write() {
+            sem_post(&this->can_write); 
+        }
+
+        T read() {
+            sem_wait(&this->can_read);
+            return this->content;
+        }
+
+        void write(T data) {
+            sem_wait(&this->can_write);
+            this->content = T();
+            this->content = data;
+        }
+};
+
+class Game {
+    private:
+        SharedBuffer<string> *str_buffer;
+        SharedBuffer<char> *char_buffer;
+        atomic<bool> *should_exit_reader;
+        thread reader;
+        bool lost;
+        int current_question;
+        int points;
+    public:
+        Game(SharedBuffer<string> *str_buffer, SharedBuffer<char> *char_buffer,
+                atomic<bool> *should_exit_reader) {
+            this->str_buffer = str_buffer;
+            this->char_buffer = char_buffer;
+            this->current_question = 0;
+            this->points = 0;
+            this->lost = false;
+            this->should_exit_reader = should_exit_reader;
+        }
+
+        void display_home() {
+            system("tput reset");
+            cout << "Welcome to the game 'Who Wants to be a Bilionaire?'.\n"
+                "Are you ready? Tell us your name:" << endl;
+        }
+        void display_greetings() {
+            this->str_buffer->allow_write();
+            string name  = this->str_buffer->read();
+            system("tput reset");
+	        cout << "\nHi, " << name << ", let's start with the rules:"
+                "You have 30 seconds to answer each question. You type "
+                "the answer (e.g.: 'b'), and the timer stops.\n"
+                "If the timer ends, you lose it all.\n"
+                "\nPress a key to start." << endl;
+        }
+
+        void display_timer(int limit) {
+            for (int i = limit; i >= 1; i--) {
+                cout << "\rTempo remanescente: [" 
+                    << string(i, '#') << string(30 - i, ' ') << "] " 
+                    << i << "s" << string(50, ' ')
+                    << "Resposta: " << flush;
+                this_thread::sleep_for(chrono::seconds(1));
+            }
+        }
+
+        void display_question(bool save_point_reached, int prize) {
+            this->str_buffer->allow_write();
+            cout << "Allowed to write to buffer" << endl; 
+            string question = this->str_buffer->read();
+            system("tput reset");
+            if (save_point_reached)
+                cout << "Congratulations. You have won $" << prize << "\n";
+            cout << question << "\n";
+            thread([=]{this->display_timer(30);}).join();
+        }
+
+        bool game_started() {
+            char_buffer->allow_write();
+            return toupper(char_buffer->read()) == 'E';
+        }
+
+        void verify_answer() {
+            char_buffer->allow_write();
+            char answer = toupper(char_buffer->read());
+            bool is_correct = answer == ANSWERS[this->current_question];
+            bool skipped = answer != 'E';
+            if (is_correct && !skipped)
+                points++;
+            lost = !is_correct && !skipped;
+        }
+
+        void display_results(int prize) {
+            cout << "The game has finished. You won" << prize << "\n";
+        }
+
+        void start() {
+            this->display_home();
+            this->display_greetings();
+            while(!game_started());
+            for (int i = 1; i <= NUMBER_OF_QUESTIONS && !lost; i++) {
+                display_question(points % 5 == 0, PRIZES[points / 5]);
+                verify_answer();
+            }
+            display_results(PRIZES[points / 5]);
+            *should_exit_reader = true;
+            this->char_buffer->allow_write();
+            cin.putback(' ');
+        }
+};
+
+class Reader {
+    private:
+        SharedBuffer<string> *str_buffer;
+        SharedBuffer<char> *char_buffer;
+        atomic<bool> *should_exit;
+        ifstream questions;
+    public:
+        Reader(SharedBuffer<string> *str_buffer, SharedBuffer<char> *char_buffer,
+                string questions_address, atomic<bool> *should_exit) {
+            this->questions.open(questions_address);
+            this->str_buffer = str_buffer;
+            this->char_buffer = char_buffer;
+            this->should_exit = should_exit;
+        }
+        ~Reader() {
+            questions.close();
+        }
+
+        void read_question() {
+            string aux1;
+            string aux2 = "";
+            for (int i = 0; i < NUMBER_OF_ALTERNATIVES + 1; i++)  {
+                getline(this->questions, aux1);
+                aux2.append(aux1).append("\n");
+            }
+            getline(this->questions, aux1);
+            aux2.append(REFUSE_TO_ANSWER).append("\n");
+            this->str_buffer->write(aux2);
+            this->str_buffer->allow_read();
+        }
+
+        void read_name() {
+            string name;
+            cin >> name;
+            this->str_buffer->write(name);
+            this->str_buffer->allow_read();
+        }
+
+        char read_char() {
+            char ch;
+            cin >> ch;
+            this->char_buffer->write(ch);
+            this->char_buffer->allow_read();
+            return ch;
+        }
+
+        void start() {
+            read_name();
+            while(toupper(read_char()) != 'E');
+            for (int i = 1; i <= NUMBER_OF_QUESTIONS && !should_exit; i++) {
+                read_question();
+                read_char();
+            }
+        }
+};
+
+void start_game(Game *game) {
+    game->start();
 }
 
-// void function to open the questions file txt
-void openQuestions () {
-	quest = fopen ("questions.txt", "r");
-	if (quest == NULL) {
-		cout << "Looks like we have a problem with the questions file... I'm sorry, " << name << " :(";
-		return;
-	}	
-	return;
-}
-
-// main function 
-void GameLoop () {
-
-	openQuestions (); // loading questions
-
-	srand(time(0)); 
-	int random = rand() % 20 + 1; // generating random number to pick random questions
-	char* result;
-	char line [100];
-
-	int i = 1;
-	while (!feof (quest)) {
-		result = fgets (line, 100, quest);
-		if (result) {
-			if (i == random) cout << "Question" << line << endl;
-			i++;
-		}
-	}
-}*/
-
-typedef struct {
-    string buffer;
-    sem_t can_read;
-    sem_t can_write;
-} SharedBufferString;
-
-typedef struct {
-    int buffer;
-    sem_t can_read;
-    sem_t can_write;
-} SharedBufferInt;
-
-void display_home(SharedBufferString *buffer) {
-    system("tput reset");
-    cout << "Welcome to the game 'Who Wants to be a Bilionaire?'.\n"
-        "Are you ready? Tell us your name:" << endl;
-    sem_post(&buffer->can_write);
-}
-
-void display_greetings(SharedBufferString *buffer) {
-    sem_wait(&buffer->can_read);
-    system("tput reset");
-	cout << "\nHi, " << buffer->buffer << ", let's start with the rules:"
-        "You have 30 seconds to answer each question. You type "
-        "the answer (e.g.: 'b'), and the timer stops.\n"
-        "If the timer ends, you lose it all.\n"
-        "\nPress 'E' to start." << endl;
-    sem_post(&buffer->can_write);
-}
-
-/*void display_timer(int limit) {
-
-}*/
-
-void display_question(SharedBufferString *buffer, bool save_point_reached, int prize) {
-    sem_post(&buffer->can_write);
-    sem_wait(&buffer->can_read);
-    system("tput reset");
-    if (save_point_reached)
-        cout << "Congratulations. You have won $" << prize << "\n";
-    cout << buffer->buffer << "\n";
-    /*thread(display_timer, 30);*/
-}
-
-void display_results(int prize) {
-    cout << "The game has finished. You won " << prize << "\n";
-}
-
-void read_question(SharedBufferString *buffer, ifstream &questions) {
-    sem_wait(&buffer->can_write);
-    string aux;
-    buffer->buffer.clear();
-    for (int i = 0; i < NUMBER_OF_ALTERNATIVES + 1; i++)  {
-        getline(questions, aux);
-        buffer->buffer.append(aux);
-        buffer->buffer.append("\n");
-    }
-    getline(questions, aux);
-    buffer->buffer.append(REFUSE_TO_ANSWER);
-    buffer->buffer.append("\n");
-    sem_post(&buffer->can_read);
-}
-
-void read_name(SharedBufferString *buffer) {
-    sem_wait(&buffer->can_write);
-    cin >> buffer->buffer;
-    sem_post(&buffer->can_read);
-}
-
-void read_enter(SharedBufferString *buffer) {
-    sem_wait(&buffer->can_write);
-    cin >> buffer->buffer;
-    sem_post(&buffer->can_read);
-}
-
-void display_thread(SharedBufferString *buffer_str) {
-    display_home(buffer_str);
-    display_greetings(buffer_str);
-    int i;
-    for (i = 1; i <= NUMBER_OF_QUESTIONS; i++) {
-        display_question(buffer_str, i % 5 == 0, PRIZES[i / 5]);
-    }
-    display_results(PRIZES[i / 5]);
-}
-
-void read_thread(SharedBufferString *buffer_str, ifstream &questions) {
-    read_name(buffer_str);
-    read_enter(buffer_str);
-    for (int i = 1; i <= NUMBER_OF_QUESTIONS; i++)
-        read_question(buffer_str, questions);
+void start_reader(Reader *reader) {
+    reader->start();
 }
 
 int main (void) {
-    SharedBufferString buffer_str;
-    buffer_str.buffer = "";
-    sem_init(&buffer_str.can_read, 0, 0);
-    sem_init(&buffer_str.can_write, 0, 0);
+    SharedBuffer<string> buffer_str;
+    SharedBuffer<char> buffer_char;
     ifstream questions;
-    questions.open("questions.txt");
-    thread th2(display_thread, &buffer_str);
-    thread th1(read_thread, &buffer_str, ref(questions));
+    atomic<bool> should_exit_reader;
+    Game game(&buffer_str, &buffer_char, &should_exit_reader);
+    Reader reader(&buffer_str, &buffer_char, "questions.txt", &should_exit_reader);
+    thread th2(start_game, &game);
+    thread th1(start_reader, &reader);
     th2.join();
     th1.join();
 	return 0;
