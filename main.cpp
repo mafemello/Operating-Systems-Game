@@ -30,6 +30,8 @@ using namespace std;
 
 const int PRIZES[4] = {0, 75000, 250000, 1000000};
 
+const char respostas[15] = {A, C, D, C, B, D, A, A, A, C, B, B, A, D, D, B, D, A, C, B}
+
 
 // global variables 
 /*string name;
