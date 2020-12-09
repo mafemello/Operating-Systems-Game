@@ -28,6 +28,7 @@
 #define NUMBER_OF_ALTERNATIVES 4
 #define REFUSE_TO_ANSWER "E - Não responder"
 #define NUMBER_OF_PRIZES 5
+#define MAX_PRIZE 1000000
 
 using namespace std;
 
@@ -91,18 +92,20 @@ class Game {
 
         void display_home() {
             system("tput reset");
-            cout << "Welcome to the game 'Who Wants to be a Bilionaire?'.\n"
-                "Are you ready? Tell us your name:" << endl;
+            cout << "Bem-vinde ao jogo 'Quem Quer Ser um Milionário?'.\n"
+                "Você está pronte? Diga-nos seu nome:" << endl;
         }
         void display_greetings() {
             this->str_buffer->allow_write();
             string name  = this->str_buffer->read();
             system("tput reset");
-	        cout << "\nHi, " << name << ", let's start with the rules:"
-                "You have 30 seconds to answer each question. You type "
-                "the answer (e.g.: 'b'), and the timer stops.\n"
-                "If the timer ends, you lose it all.\n"
-                "\nPress a key to start." << endl;
+	        cout << "\nOlá, " << name << ", vamos começar com as regras:"
+                "Você tem 30 segundos para responder cada pergunta. Digite "
+                "a alternativa (ex.: 'b'), e o temporizador para.\n"
+                "Se o tempo acabar ou você responder errado, Você perce tudo.\n"
+                "\nA cada 5 alternativas corretas, você recebe uma pontuação. "
+                "Caso não saiba uma pergunta, você sempre pode escolher a alternativa 'E', desse modo, você não é eliminado."
+                "\nPressione 'E' para começar." << endl;
         }
 
         void display_timer(int limit) {
@@ -121,7 +124,7 @@ class Game {
             string question = this->str_buffer->read();
             system("tput reset");
             if (save_point_reached)
-                cout << "Congratulations. You have won $" << prize << "\n";
+                cout << "Parabéns. Você ganhou $" << prize << "\n";
             cout << question << "\n";
             thread([=]{this->display_timer(30);}).join();
         }
@@ -142,7 +145,8 @@ class Game {
         }
 
         void display_results(int prize) {
-            cout << "The game has finished. You won" << prize << "\n";
+            if (prize == MAX_PRIZE) cout << "Parabéns!!! Você ganhou o jogo e agora é milionário!" << endl;
+            else cout << "Fim de jogo. Você ganhou $" << prize << endl;
         }
 
         void start() {
