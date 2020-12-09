@@ -99,10 +99,10 @@ class Game {
             this->str_buffer->allow_write();
             string name  = this->str_buffer->read();
             system("tput reset");
-	        cout << "\nOlá, " << name << ", vamos começar com as regras:"
+	        cout << "\nOlá, " << name << ", vamos começar com as regras: "
                 "Você tem 30 segundos para responder cada pergunta. Digite "
                 "a alternativa (ex.: 'b'), e o temporizador para.\n"
-                "Se o tempo acabar ou você responder errado, Você perce tudo.\n"
+                "Se o tempo acabar ou você responder errado, você perde tudo.\n"
                 "\nA cada 5 alternativas corretas, você recebe uma pontuação. "
                 "Caso não saiba uma pergunta, você sempre pode escolher a alternativa 'E', desse modo, você não é eliminado."
                 "\nPressione 'E' para começar." << endl;
