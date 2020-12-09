@@ -10,7 +10,7 @@
 
 - A semaphore is a variable or abstract data type used to control access to a common resource by multiple processes in a concurrent system such as a multitasking operating system.
 
-- In this game, we will use those concepts to create a really fun mechanic! 🥳
+- In this game, we will use those concepts to create a really fun mechanic! 😊
 
 
 ### How to Install
@@ -26,7 +26,7 @@
 
 - The player has 30 seconds to answer each question. Just type the answer and the timer stops.
 
-- If the player runs out of time or answers incorrectly, then he lost everything! :sad:
+- If the player runs out of time or answers incorrectly, then he lost everything! 😢
 
 - If the player doesn't know the answer, he can type 'E' and skip it, this way, he doens't get any points but also is not out of the game.
 
