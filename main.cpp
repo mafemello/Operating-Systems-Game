@@ -74,20 +74,22 @@ class Game {
     private:
         SharedBuffer<string> *str_buffer;
         SharedBuffer<char> *char_buffer;
-        atomic<bool> *should_exit_reader;
+        atomic<bool> *game_ended;
+        atomic<bool> question_answered;
         thread reader;
         bool lost;
         int current_question;
         int points;
+
     public:
         Game(SharedBuffer<string> *str_buffer, SharedBuffer<char> *char_buffer,
-                atomic<bool> *should_exit_reader) {
+                atomic<bool> *game_ended) {
             this->str_buffer = str_buffer;
             this->char_buffer = char_buffer;
             this->current_question = 0;
             this->points = 0;
             this->lost = false;
-            this->should_exit_reader = should_exit_reader;
+            this->game_ended = game_ended;
         }
 
         void display_home() {
@@ -104,29 +106,32 @@ class Game {
                 "a alternativa (ex.: 'b'), e o temporizador para.\n"
                 "Se o tempo acabar ou você responder errado, você perde tudo.\n"
                 "\nA cada 5 alternativas corretas, você recebe uma pontuação. "
-                "Caso não saiba uma pergunta, você sempre pode escolher a alternativa 'E', desse modo, você não é eliminado."
+                "Caso não saiba uma pergunta, você sempre pode escolher a "
+                "alternativa 'E', desse modo, você não é eliminado."
                 "\nPressione 'E' para começar." << endl;
         }
 
         void display_timer(int limit) {
-            for (int i = limit; i >= 1; i--) {
+            for (int i = limit; i >= 1 && !question_answered; i--) {
                 cout << "\rTempo remanescente: [" 
                     << string(i, '#') << string(30 - i, ' ') << "] " 
                     << i << "s" << string(50, ' ')
                     << "Resposta: " << flush;
                 this_thread::sleep_for(chrono::seconds(1));
             }
+            lost = !question_answered;
+            if (lost)
+                cin.putback('a');
         }
 
         void display_question(bool save_point_reached, int prize) {
             this->str_buffer->allow_write();
-            cout << "Allowed to write to buffer" << endl; 
             string question = this->str_buffer->read();
             system("tput reset");
             if (save_point_reached)
                 cout << "Parabéns. Você ganhou $" << prize << "\n";
-            cout << question << "\n";
-            thread([=]{this->display_timer(30);}).join();
+            cout << "\n" << question << "\n";
+            thread([=]{this->display_timer(30);}).detach();
         }
 
         bool game_started() {
@@ -137,14 +142,16 @@ class Game {
         void verify_answer() {
             char_buffer->allow_write();
             char answer = toupper(char_buffer->read());
-            bool is_correct = answer == ANSWERS[this->current_question];
-            bool skipped = answer != 'E';
+            question_answered = true;
+            bool is_correct = answer == ANSWERS[this->current_question++];
+            bool skipped = answer == 'E';
             if (is_correct && !skipped)
                 points++;
             lost = !is_correct && !skipped;
         }
 
         void display_results(int prize) {
+            system("tput reset");
             if (prize == MAX_PRIZE) cout << "Parabéns!!! Você ganhou o jogo e agora é milionário!" << endl;
             else cout << "Fim de jogo. Você ganhou $" << prize << endl;
         }
@@ -154,13 +161,15 @@ class Game {
             this->display_greetings();
             while(!game_started());
             for (int i = 1; i <= NUMBER_OF_QUESTIONS && !lost; i++) {
+                question_answered = false;
                 display_question(points % 5 == 0, PRIZES[points / 5]);
                 verify_answer();
             }
             display_results(PRIZES[points / 5]);
-            *should_exit_reader = true;
+            *game_ended = true;
             this->char_buffer->allow_write();
-            cin.putback(' ');
+            this->str_buffer->allow_write();
+            cin.putback('a');
         }
 };
 
@@ -168,15 +177,15 @@ class Reader {
     private:
         SharedBuffer<string> *str_buffer;
         SharedBuffer<char> *char_buffer;
-        atomic<bool> *should_exit;
+        atomic<bool> *game_ended;
         ifstream questions;
     public:
         Reader(SharedBuffer<string> *str_buffer, SharedBuffer<char> *char_buffer,
-                string questions_address, atomic<bool> *should_exit) {
+                string questions_address, atomic<bool> *game_ended) {
             this->questions.open(questions_address);
             this->str_buffer = str_buffer;
             this->char_buffer = char_buffer;
-            this->should_exit = should_exit;
+            this->game_ended = game_ended;
         }
         ~Reader() {
             questions.close();
@@ -204,7 +213,8 @@ class Reader {
 
         char read_char() {
             char ch;
-            cin >> ch;
+            if (!(cin >> ch))
+                return ' ';
             this->char_buffer->write(ch);
             this->char_buffer->allow_read();
             return ch;
@@ -213,7 +223,7 @@ class Reader {
         void start() {
             read_name();
             while(toupper(read_char()) != 'E');
-            for (int i = 1; i <= NUMBER_OF_QUESTIONS && !should_exit; i++) {
+            for (int i = 1; i <= NUMBER_OF_QUESTIONS && !(*game_ended); i++) {
                 read_question();
                 read_char();
             }
@@ -232,9 +242,10 @@ int main (void) {
     SharedBuffer<string> buffer_str;
     SharedBuffer<char> buffer_char;
     ifstream questions;
-    atomic<bool> should_exit_reader;
-    Game game(&buffer_str, &buffer_char, &should_exit_reader);
-    Reader reader(&buffer_str, &buffer_char, "questions.txt", &should_exit_reader);
+    atomic<bool> game_ended;
+    game_ended = false;
+    Game game(&buffer_str, &buffer_char, &game_ended);
+    Reader reader(&buffer_str, &buffer_char, "questions.txt", &game_ended);
     thread th2(start_game, &game);
     thread th1(start_reader, &reader);
     th2.join();
