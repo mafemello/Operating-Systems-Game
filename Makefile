@@ -1,10 +1,10 @@
 COMPILER := g++
 COMPILATION_FLAGS := -Wall -Werror -Wall -ggdb3 -fsanitize=undefined -pthread
 
-all: bin bin/timer.o bin/questions.o bin/display.o\
+all: bin bin/timer.o bin/questions.o bin/display.o bin/utils.o\
 	bin/control.o bin/game_state.o bin/main.o
 	$(COMPILER) $(COMPILATION_FLAGS) -o program \
-		bin/timer.o bin/game_state.o bin/questions.o\
+		bin/timer.o bin/game_state.o bin/questions.o bin/utils.o\
 		bin/display.o bin/control.o bin/main.o
 
 bin:
@@ -18,6 +18,9 @@ bin/questions.o: src/questions.cpp
 
 bin/display.o: src/display.cpp
 	$(COMPILER) $(COMPILATION_FLAGS) -c -o bin/display.o src/display.cpp
+
+bin/utils.o: src/utils.cpp
+	$(COMPILER) $(COMPILATION_FLAGS) -c -o bin/utils.o src/utils.cpp
 
 bin/control.o: src/control.cpp
 	$(COMPILER) $(COMPILATION_FLAGS) -c -o bin/control.o src/control.cpp

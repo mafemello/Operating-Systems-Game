@@ -38,6 +38,7 @@ static void display_question(SharedBuffer<DisplayState> *buffer, std::atomic<boo
     std::cout << build_question_page(state.text_content, state.prize) << std::endl;
     std::thread([=]{
         while(state.current_timer->is_running() && !(*stop)) {
+            std::cout << "\e[?25l";
             std::cout << "\r" << state.current_timer->to_string() 
                 << std::string(50, ' ') << "Resposta: " << std::flush;
         }

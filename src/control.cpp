@@ -1,6 +1,7 @@
 #include "../include/control.hpp"
 #include "../include/questions.hpp"
 #include "../include/game_state.hpp"
+#include "../include/utils.hpp"
 #include <iostream>
 
 const std::vector<int> PRIZES({0, 50000, 75000, 250000, 1000000});
@@ -50,7 +51,7 @@ static void provide_question(SharedBuffer<DisplayState> *buffer,
     new_state.current_timer = &game_state->timer;
     buffer->write(new_state);
     buffer->allow_read();
-    game_state->timer.start();
+    game_state->timer.start(write_any_input);
 }
 
 static void handle_answer(GameState *state, QuestionsManager *questions_manager) {
