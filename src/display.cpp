@@ -4,7 +4,7 @@
 
 static void display_introduction();
 static void display_greetings(SharedBuffer<DisplayState> *buffer);
-static void display_question(SharedBuffer<DisplayState> *buffer);
+static void display_question(SharedBuffer<DisplayState> *buffer, std::atomic<bool> *stop);
 static void display_results(SharedBuffer<DisplayState> *buffer);
 static std::string build_starting_page();
 static std::string build_introduction_page(std::string username);
@@ -15,7 +15,7 @@ void display_loop(SharedBuffer<DisplayState> *buffer, std::atomic<bool> *stop) {
     display_introduction();
     display_greetings(buffer);
     while(!(*stop))
-        display_question(buffer);
+        display_question(buffer, stop);
     display_results(buffer);
 }
 
@@ -31,13 +31,13 @@ static void display_greetings(SharedBuffer<DisplayState> *buffer) {
     std::cout << build_introduction_page(username) << std::endl;
 }
 
-static void display_question(SharedBuffer<DisplayState> *buffer) {
+static void display_question(SharedBuffer<DisplayState> *buffer, std::atomic<bool> *stop) {
     buffer->allow_write();
     DisplayState state = buffer->read();
     std::system("tput reset");
     std::cout << build_question_page(state.text_content, state.prize) << std::endl;
     std::thread([=]{
-        while(state.current_timer->is_running()) {
+        while(state.current_timer->is_running() && !(*stop)) {
             std::cout << "\r" << state.current_timer->to_string() 
                 << std::string(50, ' ') << "Resposta: " << std::flush;
         }
@@ -49,7 +49,6 @@ static void display_results(SharedBuffer<DisplayState> *buffer) {
     DisplayState state = buffer->read();
     std::system("tput reset");
     std::cout << build_results_page(state.prize) << std::endl;
-    std::cout << "Pressione enter para sair..." << std::endl;
 }
 
 std::string build_starting_page() {

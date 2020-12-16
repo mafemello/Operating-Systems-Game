@@ -1,6 +1,7 @@
 #ifndef TIMER
 #define TIMER
 
+#include "shared_buffer.hpp"
 #include <atomic>
 #include <string>
 

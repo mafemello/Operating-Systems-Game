@@ -58,16 +58,20 @@ static void handle_answer(GameState *state, QuestionsManager *questions_manager)
     std::cin >> input;
     if (state->timer.is_running()) {
         if (questions_manager->answer_is_correct(input)) {
+            std::cout << "Answer is correct" << std::endl;
             state->correct_answers++;
             state->timer.reset();
         } else if(questions_manager->answer_is_ignore(input)) {
+            std::cout << "Answer is skip" << std::endl;
             state->timer.reset();
         } else {
+            std::cout << "Answer is wrong" << std::endl;
             *(state->stop) = true;
         }
     } else {
         *(state->stop) = true;
     }
+    std::cin.clear();
 }
 
 static void provide_results(SharedBuffer<DisplayState> *buffer, GameState *game_state) {
@@ -77,5 +81,5 @@ static void provide_results(SharedBuffer<DisplayState> *buffer, GameState *game_
     new_state.current_timer = &game_state->timer;
     buffer->write(new_state);
     buffer->allow_read();
-    game_state->timer.start();
+    //game_state->timer.start();
 }
