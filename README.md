@@ -16,9 +16,9 @@
 ### How to Install
 - Dowload the file
 
-- Run `g++ blabla main.cpp` 
+- Run `make` 
 
-- Type `./programm` and the game is about to start!
+- Type `make run` and the game is about to start!
 
 
 ### How to Play
