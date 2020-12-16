@@ -20,7 +20,7 @@ void control_loop(SharedBuffer<DisplayState> *buffer, std::atomic<bool> *stop) {
     GameState state(stop);
     handle_username(buffer);
     std::cin.ignore();
-    std::cin.get();
+    std::cin.clear();
     while(!(*state.stop)) {
         provide_question(buffer, &questions_manager, &state);
         handle_answer(&state, &questions_manager);
