@@ -73,6 +73,7 @@ static void handle_answer(GameState *state, QuestionsManager *questions_manager)
         *(state->stop) = true;
     }
     std::cin.clear();
+    std::cin.ignore();
 }
 
 static void provide_results(SharedBuffer<DisplayState> *buffer, GameState *game_state) {
