@@ -6,31 +6,6 @@
 
 const std::vector<int> PRIZES({0, 50000, 75000, 250000, 1000000});
 
-static void handle_username(SharedBuffer<DisplayState> *buffer);
-static void provide_question(SharedBuffer<DisplayState> *buffer, 
-                             QuestionsManager *questions_manager,
-                             GameState *game_state);
-static void handle_answer(GameState *state, QuestionsManager *questions_manager);
-static void provide_results(SharedBuffer<DisplayState> *buffer, GameState *game_state);
-
-
-void control_loop(SharedBuffer<DisplayState> *buffer, std::atomic<bool> *stop) {
-    std::string questions_address = "questions.txt";
-    QuestionsManager questions_manager(questions_address, stop);
-    GameState state(stop);
-    handle_username(buffer);
-    std::cin.ignore();
-    std::cin.clear();
-    while(!(*state.stop)) {
-        provide_question(buffer, &questions_manager, &state);
-        handle_answer(&state, &questions_manager);
-        state.current_question++;
-        *state.stop = *state.stop || state.current_question >= 20;
-    }
-    provide_question(buffer, &questions_manager, &state);
-    provide_results(buffer, &state);
-}
-
 static void handle_username(SharedBuffer<DisplayState> *buffer) {
     std::string input;
     std::cin >> input;
@@ -80,8 +55,24 @@ static void provide_results(SharedBuffer<DisplayState> *buffer, GameState *game_
     DisplayState new_state;
     new_state.text_content = "";
     new_state.prize = PRIZES[game_state->correct_answers / 5];
-    new_state.current_timer = &game_state->timer;
+    new_state.current_timer = NULL;
     buffer->write(new_state);
     buffer->allow_read();
-    //game_state->timer.start();
+}
+
+void control_loop(SharedBuffer<DisplayState> *buffer, std::atomic<bool> *stop) {
+    std::string questions_address = "questions.txt";
+    QuestionsManager questions_manager(questions_address, stop);
+    GameState state(stop);
+    handle_username(buffer);
+    std::cin.ignore();
+    std::cin.get();
+    while(!(*state.stop)) {
+        provide_question(buffer, &questions_manager, &state);
+        handle_answer(&state, &questions_manager);
+        state.current_question++;
+        *state.stop = *state.stop || state.current_question >= 20;
+    }
+    provide_question(buffer, &questions_manager, &state);
+    provide_results(buffer, &state);
 }

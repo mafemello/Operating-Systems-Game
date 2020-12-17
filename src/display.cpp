@@ -36,13 +36,11 @@ static void display_question(SharedBuffer<DisplayState> *buffer, std::atomic<boo
     DisplayState state = buffer->read();
     std::system("tput reset");
     std::cout << build_question_page(state.text_content, state.prize) << std::endl;
-    std::thread([=]{
-        while(state.current_timer->is_running() && !(*stop)) {
-            std::cout << "\e[?25l";
-            std::cout << "\r" << state.current_timer->to_string() 
-                << std::string(50, ' ') << "Resposta: " << std::flush;
-        }
-    }).detach();
+    while(state.current_timer->is_running() && !(*stop)) {
+        std::cout << "\e[?25l";
+        std::cout << "\r" << state.current_timer->to_string() 
+            << std::string(50, ' ') << "Resposta: " << std::flush;
+    }
 }
 
 static void display_results(SharedBuffer<DisplayState> *buffer) {
