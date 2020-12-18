@@ -5,14 +5,12 @@
 #include "semaphore.h"
 #include <atomic>
 #include <string>
-#include <functional>
 
 class Timer {
     private: 
         sem_t stop;
         std::atomic<bool> timer_is_running;
         std::atomic<int> time_left; 
-        std::function<void()> timeout_callback;
         int starting_time;
 
     public:
@@ -20,7 +18,7 @@ class Timer {
 
         ~Timer();
 
-        void start(std::function<void()> timeout_callback);
+        void start();
 
         void reset();
         

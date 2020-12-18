@@ -15,7 +15,7 @@ DisplayContext QuestionController::get_display_context() {
     int prize = PRIZES[context->correct_answers / 5];
     std::string question = "Prêmio: $" + std::to_string(prize) + "\n\n"
         + context->questions_manager.get_next_question() + "\n";
-    context->timer.start(write_any_input);
+    context->timer.start();
     return DisplayContext(question, &context->timer, false);
 }
 

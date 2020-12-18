@@ -1,13 +1,13 @@
 COMPILER := g++
 COMPILATION_FLAGS := -Wall -Werror -Wall -ggdb3 -fsanitize=undefined -pthread
 
-all: bin bin/utils.o bin/timer.o bin/questions.o\
+all: bin  bin/timer.o bin/questions.o\
 	bin/display_context.o bin/pages_manager.o bin/display.o\
 	bin/game_context.o bin/controllers.o bin/starting_controller.o\
 	bin/introduction_controller.o bin/question_controller.o\
 	bin/results_controller.o bin/engine.o bin/main.o
 	$(COMPILER) $(COMPILATION_FLAGS) -o operating_systems_game \
-		bin/utils.o bin/timer.o bin/questions.o\
+		 bin/timer.o bin/questions.o\
 		bin/display_context.o bin/pages_manager.o bin/display.o\
 		bin/game_context.o bin/controllers.o bin/starting_controller.o\
 		bin/introduction_controller.o bin/question_controller.o\
@@ -15,9 +15,6 @@ all: bin bin/utils.o bin/timer.o bin/questions.o\
 
 bin:
 	mkdir bin
-
-bin/utils.o: src/utils.cpp
-	$(COMPILER) $(COMPILATION_FLAGS) -c -o bin/utils.o src/utils.cpp
 
 bin/timer.o: src/timer.cpp
 	$(COMPILER) $(COMPILATION_FLAGS) -c -o bin/timer.o src/timer.cpp

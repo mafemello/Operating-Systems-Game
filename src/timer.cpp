@@ -3,7 +3,6 @@
 
 Timer::Timer(int starting_time) {
     this->starting_time = starting_time;
-    this->timeout_callback = []{};
     time_left = starting_time;
     timer_is_running = false;
     sem_init(&stop, 0, 0);
@@ -14,10 +13,9 @@ Timer::~Timer() {
     reset();
 }
 
-void Timer::start(std::function<void()> timeout_callback) {
+void Timer::start() {
     if (is_running() || timed_out())
         reset();
-    this->timeout_callback = timeout_callback;
     timer_is_running = true;
     time_left = starting_time;
     std::thread([=]{ 
@@ -25,9 +23,7 @@ void Timer::start(std::function<void()> timeout_callback) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
             time_left--;
         }
-        if (time_left == 0)
-            timeout_callback();
-        else
+        if (!timer_is_running)
             sem_post(&stop);
         timer_is_running = false;
     }).detach();

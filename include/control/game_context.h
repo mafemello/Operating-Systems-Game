@@ -3,7 +3,6 @@
 
 #include "../questions_manager.h"
 #include "../timer.h" 
-#include <curses.h>
 
 class GameContext {
     public:

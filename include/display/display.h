@@ -6,7 +6,6 @@
 #include "../shared_buffer.h"
 #include <thread>
 #include <atomic>
-#include <curses.h>
 
 class Display {
     public:

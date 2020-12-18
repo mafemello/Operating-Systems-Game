@@ -6,7 +6,6 @@
 #include "game_context.h"
 #include <atomic>
 #include <thread>
-#include <curses.h>
 
 class Engine {
     public:
