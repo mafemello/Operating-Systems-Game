@@ -34,7 +34,7 @@ void QuestionController::handle_input() {
 }
 
 Controller *QuestionController::next() {
-    if (jump_to_last_page)
+    if (current_question >= 20 || jump_to_last_page)
         return new ResultsController(context, current_question + 1);
     return new QuestionController(context, current_question + 1);
 }
