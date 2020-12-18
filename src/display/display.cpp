@@ -1,6 +1,5 @@
 #include "../../include/display/display.h"
 
-#include <iostream>
 Display::Display(SharedBuffer<DisplayContext> *buffer) {
     display_thread = std::thread([=]{
         PagesManager pages_manager(buffer);

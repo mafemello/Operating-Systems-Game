@@ -15,7 +15,7 @@ DisplayContext StartingController::get_display_context() {
 }
 
 void StartingController::handle_input() {
-    std::cin >> username;
+    std::getline(std::cin, username);
 }
 
 Controller *StartingController::next() {

@@ -8,7 +8,6 @@ Timer::Timer(int starting_time) {
     sem_init(&stop, 0, 0);
 }
 
-#include<iostream>
 Timer::~Timer() {
     reset();
 }
