@@ -12,18 +12,15 @@ void PagesManager::display_page() {
     std::system("tput reset");
     std::cout << context.content << std::endl;
     bool clear_after = context.timer->is_running();
-    refresh();
     while(context.timer->is_running()) {
         std::cout << "\r" << context.timer->to_string() 
             << std::string(50, ' ') << "Resposta: " << std::flush;
-        refresh();
     }
     if (clear_after) {
         std::system("tput reset");
         if (context.timer->timed_out())
             std::cout << "Aperte enter para ver os resultados..." << std::endl;
     }
-    refresh();
 }
 
 bool PagesManager::is_at_last_page() {
