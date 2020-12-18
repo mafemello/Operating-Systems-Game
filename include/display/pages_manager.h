@@ -2,7 +2,6 @@
 #define PAGES
 
 #include "display_context.h"
-#include <curses.h>
 
 class PagesManager {
     public:

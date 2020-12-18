@@ -1,5 +1,5 @@
 COMPILER := g++
-COMPILATION_FLAGS := -Wall -Werror -Wall -ggdb3 -fsanitize=undefined -pthread -lncurses
+COMPILATION_FLAGS := -Wall -Werror -Wall -ggdb3 -fsanitize=undefined -pthread
 
 all: bin bin/utils.o bin/timer.o bin/questions.o\
 	bin/display_context.o bin/pages_manager.o bin/display.o\
