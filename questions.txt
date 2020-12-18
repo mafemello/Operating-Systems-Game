@@ -1,118 +1,118 @@
-1 - Normalmente, quantos litros de sangue uma pessoa tem? Em média, quantos são retirados numa doação de sangue?
+[1] Normalmente, quantos litros de sangue uma pessoa tem? Em média, quantos são retirados numa doação de sangue?
 A - Uma pessoa normalmente tem cerca de 4 a 6 litros de sangue. Em média, são retirados 450 mililitros numa doação de sangue.
 B - Uma pessoa normalmente tem cerca de 7 a 9 litros de sangue. Em média, são retirados 10 mililitros numa doação de sangue.
 C - Uma pessoa normalmente tem cerca de 1 a 2 litros de sangue. Em média, é retirado 1 litro numa doação de sangue.
 D - Uma pessoa normalmente tem exatamente 5 litros de sangue. Em média, são retirados 800 mililitros numa doação de sangue.
 
-- De quem é a famosa frase “Penso, logo existo”?
+[2] De quem é a famosa frase “Penso, logo existo”?
 A - Friedrich Nietzsche
 B - Immanuel Kant
 C - René Descartes.
 D - Platão.
 
-- De onde é a invenção do chuveiro elétrico?
+[3] De onde é a invenção do chuveiro elétrico?
 A - China.
 B - Inglaterra.
 C - Estados Unidos.
 D - Brasil.
 
-- Quais o menor e o maior país do mundo?
+[4] Quais o menor e o maior país do mundo?
 A - Vaticano e China.
 B - Vaticano e Brasil.
 C - Vaticano e Russia.
 D - Tuvalu e China.
 
-- Qual o nome do presidente do Brasil que ficou conhecido como Jango?
+[5] Qual o nome do presidente do Brasil que ficou conhecido como Jango?
 A - Luiz Inácio Lula da Silva.
 B - João Goulart.
 C - Juscelino Kubitschek.
 D - Jair Bolsonaro.
 
-- Qual o livro mais vendido no mundo a seguir à Bíblia?
+[6] Qual o livro mais vendido no mundo a seguir à Bíblia?
 A - O Pequeno Príncipe.
 B - O Senhor dos Anéis
 C - Harry Potter e a Pedra Filosofal.
 D - Don Quixote.
 
-- Quantas casas decimais tem o número pi?
+[7] Quantas casas decimais tem o número pi?
 A - Infinitas.
 B - 1.000.000.
 C - 1.000.
 D - 11.265.875.
 
-- Atualmente, quantos elementos químicos a tabela periódica possui?
+[8] Atualmente, quantos elementos químicos a tabela periódica possui?
 A - 118.
 B - 120.
 C - 123.
 D - 104.
 
-- Qual o número mínimo de jogadores numa partida de futebol?
+[9] Qual o número mínimo de jogadores numa partida de futebol?
 A - 14.
 B - 16.
 C - 22.
 D - 17.
 
-- Quem pintou "Guernica"?
+[10] Quem pintou "Guernica"?
 A - Leonardo Da Vinci.
 B - Claude Monet.
 C - Pablo Picasso.
 D - Vincent van Gogh.
 
-- Quanto tempo a luz do Sol demora para chegar à Terra?
+[11] Quanto tempo a luz do Sol demora para chegar à Terra?
 A - 4 horas.
 B - 8 minutos.
 C - 1 ano.
 D - 35 segundos.
 
-- Qual personagem folclórico costuma ser agradado pelos caçadores com a oferta de fumo?
+[12] Qual personagem folclórico costuma ser agradado pelos caçadores com a oferta de fumo?
 A - Saci Perere.
 B - Caipora.
 C - Mula sem cabeça.
 D - Curupira.
 
-- Em que período da pré-história o fogo foi descoberto?
+[13] Em que período da pré-história o fogo foi descoberto?
 A - Neolítico.
 B - Paleolítico.
 C - Mesolítico.
 D - Teolítico.
 
-- Qual a montanha mais alta do Brasil?
+[14] Qual a montanha mais alta do Brasil?
 A - Pedra da Mina.
 B - Monte Roraima.
 C - Pico da Bandeira.
 D - Pico da Neblina.
 
-- Em qual local da Ásia o português é língua oficial?
+[15] Em qual local da Ásia o português é língua oficial?
 A - Índia
 B - Filipinas
 C - Moçambique
 D - Macau
 
-- Quem é o autor de “O Príncipe”?
+[16] Quem é o autor de “O Príncipe”?
 A - Desiderius Erasmus.
 B - Nicolau Maquiavel.
 C - Thomas Hobbes.
 D - Dante Alighieri.
 
-- Qual destes países é transcontinental?
+[17] Qual destes países é transcontinental?
 A - China.
 B - Japão.
 C - Estados Unidos.
 D - Russia.
 
-- Qual era o nome de Aleijadinho?
+[18] Qual era o nome de Aleijadinho?
 A - Antônio Francisco Lisboa.
 B - Michelangelo Merisi da Caravaggio.
 C - Joaquim José da Silva Xavier.
 D - Michelangelo di Lodovico Buonarroti Simoni.
 
-- Júpiter e Plutão são os correlatos romanos de quais deuses gregos?
+[19] Júpiter e Plutão são os correlatos romanos de quais deuses gregos?
 A - Poseidon e Hades.
 B - Zeus e Poseidon.
 C - Zeus e Hades.
 D - Atena e Dionísio.
 
-- Quais os nomes dos três Reis Magos?
+[20] Quais os nomes dos três Reis Magos?
 A - Aole, Melchior e Pedro
 B - Baltasar, Gaspar e Melchior.
 C - Baltasar, Gaspar e Pedro

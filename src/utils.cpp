@@ -1,4 +1,4 @@
-#include "../include/utils.hpp"
+#include "../include/utils.h"
 
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -52,17 +52,17 @@ void kbhit(char ch)
   fcntl(STDIN_FILENO, F_SETFL, oldf);
 }
 
-static void press_a() {
+/*static void press_a() {
     kbhit('a');
 }
 
 static void press_enter() {
     kbhit('\n');
-}
+}*/
 
 #endif
 
 void write_any_input() {
-    press_a();
-    press_enter();
+    //press_a();
+    //press_enter();
 }

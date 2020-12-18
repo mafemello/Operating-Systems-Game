@@ -1,7 +1,8 @@
 #ifndef QUESTION
 #define QUESTION
 
-#include "shared_buffer.hpp"
+#include "shared_buffer.h"
+#include <semaphore.h>
 #include <string>
 #include <fstream>
 #include <vector>
@@ -9,16 +10,16 @@
 
 class QuestionsManager {
     private:
+        sem_t stop;
+        std::atomic<bool> is_running;
         std::ifstream questions_file;
         SharedBuffer<std::string> next_question_buffer;
         int current_question;
-        std::atomic<bool> *should_stop;
 
         void read_next_question();
 
     public:
-        QuestionsManager(std::string &questions_adderess, 
-                         std::atomic<bool> *should_stop);
+        QuestionsManager(const std::string &questions_adderess);
 
         ~QuestionsManager();
 

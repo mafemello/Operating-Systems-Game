@@ -1,29 +1,30 @@
 #ifndef TIMER
 #define TIMER
 
-#include "shared_buffer.hpp"
+#include "shared_buffer.h"
+#include "semaphore.h"
 #include <atomic>
 #include <string>
 #include <functional>
 
-typedef void (*TimeoutCallback)();
-
 class Timer {
     private: 
-        std::atomic<bool> *stop;
+        sem_t stop;
         std::atomic<bool> timer_is_running;
         std::atomic<int> time_left; 
-        TimeoutCallback timeout_callback;
+        std::function<void()> timeout_callback;
         int starting_time;
 
     public:
-        Timer(int starting_time, std::atomic<bool> *stop);
+        Timer(int starting_time);
 
-        void start(TimeoutCallback timeout_callback);
+        ~Timer();
 
-        std::string to_string();
+        void start(std::function<void()> timeout_callback);
 
         void reset();
+        
+        std::string to_string();
 
         bool timed_out();
 
